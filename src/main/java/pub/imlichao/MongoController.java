@@ -1,24 +1,33 @@
 package pub.imlichao;
 
 import entity.Spec;
+import entity.SpecPackage;
 import entity.build.AbstractBuilder;
 import entity.build.SpecBuilder;
 import entity.build.SpecDirector;
+import entity.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Controller
+import static com.mongodb.client.model.Aggregates.match;
+import static com.mongodb.client.model.Aggregates.unwind;
+
+@RestController
 public class MongoController {
 
     @Autowired
@@ -27,6 +36,25 @@ public class MongoController {
     @GetMapping(value = "/")
     public String index(){
         return "redirect:/find";
+    }
+
+    @GetMapping(value = "/spec")
+    public Object getSpec(@RequestParam String packageName) {
+        System.out.println(111);
+        Query query = new Query(Criteria.where("packageName").is(packageName));
+//        SpecPackage specPackage = mongoTemplate.findOne(query, SpecPackage.class);
+//        Aggregation aggregation = new Aggregation(
+//                unwind("$specs"),
+//                match(Criteria.where("packageName").is(packageName).and("specName").is("Ptient")),
+//
+//        );
+        SpecPackage specPackage = mongoTemplate.findOne(query, SpecPackage.class);
+        for (Spec s:specPackage.getSpecs()) {
+            if (s.getSpecName().equals("Doctor")){
+                return s.getSignature().getAttributes().getAttrs().toString();
+            }
+        }
+        return "nonono";
     }
 
     //新增文档
@@ -53,7 +81,7 @@ public class MongoController {
 
     //新增文档
     @GetMapping(value = "/insertspec")
-    public String insertsp(){
+    public String insertsp() throws IOException{
         String s = "Spec Array;\n" +
                 "uses Integer,Bool;\n" +
                 "Const nil;\n" +
@@ -61,22 +89,16 @@ public class MongoController {
                 "\tisEmpty: Bool;\n" +
                 "\tlength: Integer;\n" +
                 "Retr\n" +
-                "\tgetMin(Array):Integer;\t\t\t\t\t// 数组的最小值\n" +
-                "\tgetMax(Array):Integer;\t\t\t\t\t// 数组的最大值\n" +
-                "\tgetElement(Integer):Integer;\t\t\t// 某索引位置的元素\n" +
-                "\tgetIndex(Integer):Integer;\t\t\t\t// 返回某元素的索引位置\n" +
-                "\tsum(Array):Integer;\t\t\t\t\t\t// 数组求和\n" +
+                "\tgetMin(Array):Integer;\n" +
+                "\tgetMax(Array):Integer;\n" +
+                "\tgetElement(Integer):Integer;\n" +
+                "\tgetIndex(Integer):Integer;\n" +
+                "\tsum(Array):Integer;\n" +
                 "Tran\n" +
-                "\tinsert(Array,Integer,Integer):Array;\t// 往数组插入新元素\n" +
-                "\tclear(Array):Array;\t\t\t\t\t\t// 清空数组\n" +
-                "\tdel(Integer):Array;\t\t\t\t\t\t// 删除某索引位置的元素\n" +
-                "\tisort(Array):Array;\t\t\t\t\t\t// 递增排序数组\n" +
-                "\tdsort(Array):Array;\t\t\t\t\t\t// 递减排序数组\n" +
-                "\treverse(Array):Array;\t\t\t\t\t// 数组逆序\n" +
+                "\tinsert(Array,Integer,Integer):Array;\n" +
+                "\tclear(Array):Array;\n" +
                 "Axiom\n" +
                 "\n" +
-                "\t\n" +
-                "\t// 等价关系,元素调换顺序，不改变元素的值\n" +
                 "\tFor all a:Array that\t\n" +
                 "\t\ta.reverse() ≡ a , if a.length <> 0;\t\t\t\t\t\t\n" +
                 "\t\ta.reverse() ≡ a.dsort();\n" +
@@ -88,11 +110,31 @@ public class MongoController {
                 "\t\ta.isort() ≡ a;\t\t\n" +
                 "\tEnd\n" +
                 "End";
-        AbstractBuilder mBuilder = new SpecBuilder();
-        SpecDirector specDirector = new SpecDirector(mBuilder);
-        Spec spec = specDirector.construct(s);
-        System.out.println(spec.getAxioms().getEquations());
-        mongoTemplate.insert(spec);
+//        AbstractBuilder mBuilder = new SpecBuilder();
+//        SpecDirector specDirector = new SpecDirector(mBuilder);
+//        Spec spec = specDirector.construct(s);
+//        System.out.println(spec.getAxioms().getEquations());
+//        mongoTemplate.insert(spec);
+
+
+        String specDoc = FileUtil.read("D:\\1NJUST\\大论文\\paper\\casestudy\\BasicSpec.txt");
+        String[] specs = specDoc.split("Spec");
+        SpecPackage specPackage = new SpecPackage();
+        List<Spec> list = new ArrayList<>();
+        int count = 0;
+        System.out.println(specs.length);
+        for (int i = 1;i<specs.length;i++){
+            specs[i] = "Spec" +  specs[i];
+            AbstractBuilder mBuilder = new SpecBuilder();
+            SpecDirector specDirector = new SpecDirector(mBuilder);
+            Spec spec = specDirector.construct(specs[i]);
+            list.add(count, spec);
+            count++;
+        }
+        System.out.println(list.get(0));
+        specPackage.setSpecs(list);
+        specPackage.setPackageName("com.Array");
+        mongoTemplate.insert(specPackage);
         return "redirect:/find";
     }
 
