@@ -11,13 +11,13 @@ import java.util.List;
  * @date 2019/8/2
  */
 public class Attributes {
-    private List<HashMap<String,Object>> attrs;
+    private HashMap<String,Object> attrs;
 
-    public List<HashMap<String, Object>> getAttrs() {
+    public HashMap<String, Object> getAttrs() {
         return attrs;
     }
 
-    public void setAttrs(List<HashMap<String, Object>> attrs) {
+    public void setAttrs(HashMap<String, Object> attrs) {
         this.attrs = attrs;
     }
 
