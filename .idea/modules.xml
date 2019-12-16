@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/algSpecManage.iml" filepath="$PROJECT_DIR$/algSpecManage.iml" />
+      <module fileurl="file://D:/1NJUST/大论文/paper/array/array.iml" filepath="D:/1NJUST/大论文/paper/array/array.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../algMonicSeqRunner/run.iml" filepath="$PROJECT_DIR$/../algMonicSeqRunner/run.iml" />
+    </modules>
+  </component>
+</project>
