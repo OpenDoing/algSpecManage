@@ -179,12 +179,12 @@ public class SpecUtil {
         return lr;
     }
 
-    public static List<HashMap<String, Object>> getAttr(String s) {
+    public static HashMap<String, Object> getAttr(String s) {
         String ss = "Attr";
         if (!s.contains(ss)) {
             return null;
         }
-        ArrayList<HashMap<String, Object>> l = new ArrayList<>();
+        HashMap<String, Object> m = new HashMap<>(1);
         String s1 = SpecUtil.divide(s, "Attr");
         String[] s2 = s1.split("\n");
         for (int i = 0; i < s2.length; i++) {
@@ -192,12 +192,10 @@ public class SpecUtil {
             if (s2[i].contains(":") && s2[i].contains(";")) {
                 String ss1 = s2[i].substring(0, s2[i].indexOf(":"));
                 String ss2 = s2[i].substring(s2[i].indexOf(":") + 1, s2[i].indexOf(";"));
-                HashMap<String, Object> m = new HashMap<>(1);
                 m.put(ss1, ss2);
-                l.add(m);
             }
         }
-        return l;
+        return m;
     }
 
     public static List<String> getConst(String s) {

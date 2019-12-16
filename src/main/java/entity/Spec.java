@@ -12,7 +12,6 @@ import java.util.List;
  * @author Duyining
  * @date 2019/8/2
  */
-@Document(collection = "spec")
 public class Spec {
     //标记id字段
     @Id

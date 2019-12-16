@@ -1,13 +1,18 @@
 package controller;
 
 import entity.Spec;
+import entity.SpecPackage;
 import entity.build.AbstractBuilder;
 import entity.build.SpecBuilder;
 import entity.build.SpecDirector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import pub.imlichao.EntityTest;
 import pub.imlichao.EntityTest1;
 
@@ -20,11 +25,19 @@ import java.util.Date;
  * @author Duyining
  * @date 2019/10/17
  */
-@Controller
+@RestController
 public class SpecController {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @GetMapping("/spec")
+    public Object getSpec(@RequestParam String packageName) {
+        System.out.println(666);
+        Query query = new Query(Criteria.where("packageName").is(packageName));
+        SpecPackage specPackage = mongoTemplate.findOne(query, SpecPackage.class);
+        return specPackage;
+    }
 
 //    //新增文档
 //    @GetMapping(value = "/insertspec")

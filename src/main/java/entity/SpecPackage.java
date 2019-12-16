@@ -1,5 +1,7 @@
 package entity;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
  * @author Duyining
  * @date 2019/8/21
  */
+@Document(collection = "spec")
 public class SpecPackage {
     /**
      * 规约文档的包名
